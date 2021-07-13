@@ -65,6 +65,7 @@ a:hover {
   height: 100%;
   overflow: auto;
   padding-bottom: 60px;
+  padding: 20px;
 }
 
 .listings .item {
