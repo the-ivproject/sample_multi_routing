@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Add markers to a web map with a symbol layer</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <link rel="stylesheet"
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+        type="text/css">
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js">
+    </script>
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+
+    <!-- Import Mapbox GL Directions -->
+    <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
+        </script> <link rel="stylesheet" href="css/map.css">
+</head>
+
+<body>
+    <div class = "sidebar">
+        <div class = "heading" >
+            <h1 > Our locations </h1> 
+        </div> 
+        <div id = "listings"class = "listings" >
+            <button onclick = "getRoutes()"> Generate Route </button> 
+        </div>
+    </div>
+    <div id = "map" class = "map" ></div> 
+
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" >
+    </script>
+    <script src="js/index.js"></script>
+
+    </body>
+
+</html>
