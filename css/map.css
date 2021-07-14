@@ -1,6 +1,6 @@
 body {
   color: #404040;
-  font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
+  font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -17,14 +17,15 @@ body {
   width: 33.3333%;
   height: 100%;
   top: 0;
-  left: 0;
+  right: 0;
   overflow: hidden;
   border-right: 1px solid rgba(0, 0, 0, 0.25);
+  padding: 20px;
 }
 
 .map {
   position: absolute;
-  left: 33.3333%;
+  right: 33.3333%;
   width: 66.6666%;
   top: 0;
   bottom: 0;
@@ -35,11 +36,13 @@ ul, ol {
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 40px;
   margin: 0;
   font-weight: 400;
   line-height: 20px;
   padding: 20px 2px;
+  font-weight: bold;
+  color: #000;
 }
 
 a {
@@ -53,11 +56,11 @@ a:hover {
 
 .heading {
   background: #fff;
-  border-bottom: 1px solid #eee;
+  /* border-bottom: 1px solid #eee; */
   min-height: 60px;
-  line-height: 60px;
-  padding: 0 10px;
-  background-color: #00853e;
+  /* line-height: 60px; */
+  padding: 0 20px;
+  /* background-color: #00853e; */
   color: #fff;
 }
 
