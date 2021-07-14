@@ -6,6 +6,8 @@
     <title>Add markers to a web map with a symbol layer</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+
     <link rel="stylesheet"
         href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
         type="text/css">
@@ -17,25 +19,131 @@
 
     <!-- Import Mapbox GL Directions -->
     <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
-        </script> <link rel="stylesheet" href="css/map.css">
+    </script>
+
+    <link rel="stylesheet" href="css/map.css">
+    
 </head>
+<style>
+    #geocoder {
+        z-index: 1;
+        margin: 20 px;
+    }
+
+    .mapboxgl-ctrl-geocoder {
+        min-width: 100%;
+    }
+    *CSS*/
+ol {
+  list-style-type: none;
+  counter-reset: 0;
+}
+
+.list-itn {
+  position: relative;
+  margin: 7px;
+  padding-bottom: 5px;
+  padding-left: 20px;
+  counter-increment:item
+}
+
+.list-itn:before {
+  content:'';
+  background-color: #4338ca;
+  position: absolute;
+  bottom: 0;
+  top: 22px;
+  left: 0px;
+  width: 3px;
+  height: 100%;
+}
+
+.list-itn:after {
+    content: counter(item);
+    text-align: center;
+    display: inline-block;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    position: absolute;
+    left: -13px;
+    top: 30%;
+    transform: translateY(-50%);
+    padding: 4px;
+    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    background-color: #4338ca
+}
+
+.place-name {
+    margin: 0;
+    padding: 3px 11px;
+    font-weight: 700;
+    color: #000;
+}
+.mapboxgl-ctrl-geocoder--button svg{ 
+    display: none;
+}
+input[type="text"]:disabled {
+    background: #dddddd;
+  }
+
+.xy {
+    padding: 0 11px;
+    color: #000;
+    font-weight: 300;
+}
+
+.numbered {
+    padding: 5px 25px;
+}
+
+button {
+    padding: 10px;
+    width: 35%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.add-address {
+    background-color: white;
+    border: 3px solid #000;
+    color: black;
+    margin: 8px;
+}
+
+.add-routes {
+    background-color: white;
+    border: 3px solid #4338ca;
+    color: black;
+    margin: 8px;
+}
+
+.mapboxgl-ctrl-geocoder .suggestions {
+    position: relative!important;
+}
+</style>
 
 <body>
-    <div class = "sidebar">
-        <div class = "heading" >
-            <h1 > Itinerary </h1> 
-        </div> 
-        <div id = "listings"class = "listings" >
-            <h4>Add multiple locations via Geocoder Input</h4>
-            <button onclick = "getRoutes()"> Generate Route </button> 
+    <div class="sidebar">
+        <div class="heading">
+            <h1> Itinerary <span id="distance" style="font-size: 16px;font-weight: normal;">0 of kilometers</span> </h1>
+        </div>
+        <div id="listings" class="listings">
+            <button class="add-address" onclick="addInput()"> Add Address </button>
+            <button class="add-routes" onclick="getRoutes()"> Generate Route </button>
         </div>
     </div>
-    <div id = "map" class = "map" ></div> 
 
-    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" >
+    <div id="map" class="map"> </div>
+
+    <script script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
     </script>
     <script src="js/index.js"></script>
 
-    </body>
+</body>
 
 </html>
