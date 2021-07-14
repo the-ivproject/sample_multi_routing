@@ -196,9 +196,9 @@ a:hover {
   width: 30px;
   height: 30px;
   color: #fff;
-  background: #693;
+  background: #4338ca;
   border: solid 2px;
-  border-radius: 0 70% 70%;
+  border-radius: 50%;
   box-shadow: 0 0 2px #000;
   cursor: pointer;
   transform-origin: 0 0;

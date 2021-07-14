@@ -153,7 +153,7 @@ function getRoutes() {
 
         for (let i = 0; i < existRoute.length; i++) {
             if (i + 1 !== existRoute.length) {
-                // geojson&overview=full&access_token=
+               
                 let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${existRoute[i]};${existRoute[i + 1]}?steps=true&geometries=geojson&overview=full&access_token=${mapbox_token}`
                
                 let id = `${fetList[i].properties.name}${i}`
@@ -221,6 +221,8 @@ function getRoutes() {
                     .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
                 .addTo(map);
         });
+        
+        marker.remove()
 
     }
 }
