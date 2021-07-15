@@ -6,25 +6,25 @@
     <title>Add markers to a web map with a symbol layer</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet"
-        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-        type="text/css">
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js">
-    </script>
+        <link rel="stylesheet"
+            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+            type="text/css">
+        <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js">
+        </script>
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+        <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+        <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
 
-    <!-- Import Mapbox GL Directions -->
-    <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
-    </script>
+        <!-- Import Mapbox GL Directions -->
+        <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
+        </script>
 
-    <link rel="stylesheet" href="css/map.css">
-    
-</head>
-<style>
+        <link rel="stylesheet" href="css/map.css">
+        
+    </head>
+    <style>
     #geocoder {
         z-index: 1;
         margin: 20 px;
@@ -33,115 +33,184 @@
     .mapboxgl-ctrl-geocoder {
         min-width: 100%;
     }
-    *CSS*/
-ol {
-  list-style-type: none;
-  counter-reset: 0;
-}
 
-.list-itn {
-  position: relative;
-  margin: 7px;
-  padding-bottom: 5px;
-  padding-left: 20px;
-  counter-increment:item
-}
+    ol {
+    list-style-type: none;
+    counter-reset: 0;
+    }
 
-.list-itn:before {
-  content:'';
-  background-color: #4338ca;
-  position: absolute;
-  bottom: 0;
-  top: 22px;
-  left: 0px;
-  width: 3px;
-  height: 100%;
-}
+    .list-itn {
+    position: relative;
+    margin: 7px;
+    padding-bottom: 5px;
+    padding-left: 20px;
+    counter-increment:item
+    }
 
-.list-itn:after {
-    content: counter(item);
-    text-align: center;
-    display: inline-block;
-    color: white;
-    font-weight: bold;
-    border-radius: 50%;
+    .list-itn:before {
+    content:'';
+    background-color: #4338ca;
     position: absolute;
-    left: -13px;
-    top: 30%;
-    transform: translateY(-50%);
-    padding: 4px;
-    font-size: 16px;
-    width: 20px;
-    height: 20px;
-    background-color: #4338ca
-}
+    bottom: 0;
+    top: 22px;
+    left: 0px;
+    width: 3px;
+    height: 100%;
+    }
 
-.place-name {
-    margin: 0;
-    padding: 3px 11px;
-    font-weight: 700;
-    color: #000;
-}
-.mapboxgl-ctrl-geocoder--button svg{ 
-    display: none;
-}
-input[type="text"]:disabled {
-    background: #dddddd;
-  }
+    .list-itn:after {
+        content: counter(item);
+        text-align: center;
+        display: inline-block;
+        color: white;
+        font-weight: bold;
+        border-radius: 50%;
+        position: absolute;
+        left: -13px;
+        top: 30%;
+        transform: translateY(-50%);
+        padding: 4px;
+        font-size: 15px;
+        width: 20px;
+        height: 20px;
+        background-color: #4338ca
+    }
 
-.xy {
-    padding: 0 11px;
-    color: #000;
-    font-weight: 300;
-}
+    .place-name {
+        margin: 0;
+        padding: 3px 11px;
+        font-weight: 700;
+        color: #000;
+    }
+    .mapboxgl-ctrl-geocoder--button svg{ 
+        display: none;
+    }
+    input[type="text"]:disabled {
+        background: #dddddd;
+    }
 
-.numbered {
-    padding: 5px 25px;
-}
+    .xy {
+        padding: 0 11px;
+        color: #000;
+        font-weight: 300;
+        display: block;
+        font-size: 12px;
+    }
 
-button {
-    padding: 10px;
-    width: 35%;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
+    .numbered {
+        padding: 5px 15px;
+    }
 
-.add-address {
-    background-color: white;
-    border: 3px solid #000;
-    color: black;
-    margin: 8px;
-}
+    button {
+        padding: 4px;
+        width: 30%;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12px;
+    }
 
-.add-routes {
-    background-color: white;
-    border: 3px solid #4338ca;
-    color: black;
-    margin: 8px;
-}
+    .add-address {
+        background-color: white;
+        border: 3px solid #000;
+        color: black;
+        margin: 8px;
+    }
 
-.mapboxgl-ctrl-geocoder .suggestions {
-    position: relative!important;
-}
+    .add-routes {
+        background-color: white;
+        border: 3px solid #4338ca;
+        color: black;
+        margin: 8px;
+    }
+
+    .btn-remove {
+        margin: 7px 11px;
+        color: white;
+        font-weight: bold;
+        background-color: #dc3545;
+        width: 30px;
+        padding: 4px;
+        font-size: 10px;
+    }
+
+    .mapboxgl-ctrl-geocoder .suggestions {
+        position: relative!important;
+    }
+
+    .mapboxgl-popup-content {
+        padding: 5px;
+        border-radius: 3px;
+    }
+    #basemaps-wrapper {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        z-index: 9999;
+    }
+    #basemaps {
+        font-size: 16px;
+        padding: 6px 12px;
+        border: none;
+        box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+        border-radius: 3px;
+    }
+
+    .legend {
+        padding-bottom: 80px;
+        padding: 20px;
+    }
+
+    .legend input {
+        margin: 8px;
+    }
+
+    .legend h2 {
+        font-size: 18px;
+        color: #000;
+        font-weight: bold;
+        margin: 8px;
+    }
+
+    .legend label {
+        font-size: 12px;
+    }
 </style>
 
 <body>
     <div class="sidebar">
         <div class="heading">
-            <h1> Itinerary <span id="distance" style="font-size: 16px;font-weight: normal;">0 of kilometers</span> </h1>
+            <h1> Itinerary <span id="distance" style="font-size: 14px;font-weight: normal;">0 of kilometers</span> </h1>
         </div>
         <div id="listings" class="listings">
-            <button class="add-address" onclick="addInput()"> Add Address </button>
-            <button class="add-routes" onclick="getRoutes()"> Generate Route </button>
+            <button class="add-address" onclick="addInput()"> Add Place </button>
+            <button class="add-routes" onclick="getRoutes()"> Get Route </button>
+        </div>
+        <div class="legend">
+            <h2> Legend </h2>
+            <input id="checkpoint" type="checkbox" name="checkbox" onclick="ShowHidePoint()" disabled="disabled"> </input>
+            <label for="checkbox">Show/Hide the Point</label>
+            <br>
+            <input id="change-color" type="color" name="change-color" ></input>
+            <label for="change-color">Change Route Line Color</label>
         </div>
     </div>
 
-    <div id="map" class="map"> </div>
+    <div id="map" class="map">    
+        <div id="basemaps-wrapper">
+            <select id="basemaps" onchange="ChangeBaseMap(this)">
+                <option value="light-v10">Light</option>
+                <option value="dark-v10">Dark</option>
+                <option value="streets-v11">Streets</option>
+                <option value="outdoors-v11">Outdoors</option>
+            </select>
+        </div> 
+    </div>
 
     <script script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
     </script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src="js/index.js"></script>
 
 </body>
