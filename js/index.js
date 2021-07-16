@@ -178,7 +178,7 @@ let GetCoordinate = listCoordinate => {
 let defTotalLayer;
 
 let getRoutes = () => {
-    
+
     let distText = document.getElementById('distance')
     let L = lists.querySelectorAll("pre")
 
@@ -356,10 +356,7 @@ let addCustomMarker = markers => {
         })
 
         popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`).addTo(map);
-        
-        let val = document.getElementById('basemap')
-        
-        changeToWhite(val)
+
     });
 }
 
@@ -402,10 +399,7 @@ let RemoveStep = (totalLayer) => {
         });
 
         getRoutes()
-        
-        let val = document.getElementById('basemap')
-        
-        changeToWhite(val)
+
     }
 }
 
@@ -433,9 +427,13 @@ map.on('load', () => {
         map.setStyle(`mapbox://styles/ivproject/${this.value}`)
 
         getRoutes()
-        
-        changeToWhite(this)
-        
+
+        if (this.value === "ckr6t9kkq0ygv18qi5sazmai1") {
+            let label = document.querySelectorAll(".point-label")
+            label.forEach(label => {
+                label.style.color = "white"
+            })
+        }
         let color = document.getElementById("change-color")
 
         color.addEventListener('change', (val) => {
@@ -455,13 +453,4 @@ map.on('load', () => {
 let setDefStyle = () => {
     let existBasemapValue = document.getElementById('basemaps').value
     map.setStyle(`mapbox://styles/ivproject/${existBasemapValue}`)
-}
-
-let changeToWhite = (bVale) => {
-    if (bVale.value === "ckr6t9kkq0ygv18qi5sazmai1") {
-    let label = document.querySelectorAll(".point-label")
-    label.forEach(label => {
-        label.style.color = "white"
-    })
-}
 }
