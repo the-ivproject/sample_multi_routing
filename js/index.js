@@ -1,10 +1,10 @@
-const mapbox_token = 'pk.eyJ1Ijoibm92dXMxMDIwIiwiYSI6ImNrcGltcnp0MzBmNzUybnFlbjlzb2R6cXEifQ.GjmiO9cPjoIozKaG7nJ4qA';
+const mapbox_token = 'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuOWltYzJyeGMycW1jNDVlbDQwejQifQ.97Y2eucdbVp1F2Ow8EHgBQ';
 
 mapboxgl.accessToken = mapbox_token
 
 let map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/light-v10',
+    style: 'mapbox://styles/ivproject/ckr65sxbr12ci17m5lqeswh81',
     center: [-96, 37.8],
     zoom: 2
 });
@@ -12,23 +12,68 @@ let map = new mapboxgl.Map({
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-function ChangeBaseMap(option) {
-    var optionVal = option.value;
-    map.setStyle(`mapbox://styles/mapbox/${optionVal}`);
-}
+let toTalLayer =  []
+
+map.on('load',() => {
+    let si = map.getStyle().layers
+    toTalLayer.push(si.length)
+    
+   console.log(si)
+})
+
+document.getElementById('basemaps').addEventListener('change', function () {
+    map.setStyle(`mapbox://styles/mapbox/${this.value}`)
+       
+   
+    let si = map.getStyle().layers
+    
+    toTalLayer.push(si.length)
+
+    
+    // console.log(toTalLayer.slice(-1))
+ 
+ 
+   
+})
+
+
+
+// map.on('style.load',()=> {
+//     document.getElementById('basemaps').addEventListener('change', function () {
+//         map.setStyle(`mapbox://styles/mapbox/${this.value}`)
+//         let si = map.getStyle().layers
+//         toTalLayer = si.length
+//     });
+// })
+
+// function ChangeBaseMap(option) {
+//     var optionVal = option.value;
+//     map.setStyle(`mapbox://styles/mapbox/${optionVal}`);
+//     let si = map.getStyle().layers
+    
+//    toTalLayer = si.length
+// }
+
+
 
 function ShowHidePoint() {
     let check = document.getElementById("checkpoint")
-
+    let classPopup = document.querySelectorAll('.point-label')
     let marker = document.querySelectorAll(".marker")
 
     if (check.checked == false) {
-        marker.forEach((marker) => {
+        marker.forEach((marker,i) => {
             marker.style.visibility = 'hidden'
         })
+        classPopup.forEach((classPopup,i) => {
+            classPopup.style.visibility = 'hidden'
+        })
     } else {
-        marker.forEach((marker) => {
+        marker.forEach((marker,i) => {
             marker.style.visibility = 'visible'
+        })
+        classPopup.forEach((classPopup,i) => {
+            classPopup.style.visibility = 'visible'
         })
     }
 }
@@ -66,11 +111,18 @@ function addInput() {
     btn.className = 'btn-remove'
     btn.id = `btn${++i}`
     btn.onclick = function () {
+        
+        let classPopup = document.querySelectorAll('.point-label')
+
         let L = lists.querySelectorAll("pre")
 
         if (L.length <= 2) {
             alert('Need at least 2 inputs')
         } else {
+            classPopup.forEach(a => {
+                a.remove()
+            })
+
             let index = $(this).parent('li').index()
 
             let id = parseInt(index)
@@ -87,15 +139,14 @@ function addInput() {
                 })
             }
 
-            let defLayer = map.getStyle().layers.slice(83, this.length)
+            let defLayer = map.getStyle().layers.slice(toTalLayer.slice(-1)[0], this.length)
 
             defLayer.forEach(element => {
                 map.removeLayer(element.id)
             });
 
             getRoutes()
-
-            
+        
         }
     }
 
@@ -116,22 +167,6 @@ function addInput() {
         accessToken: mapbox_token,
         mapboxgl: mapboxgl,
         placeholder: null,
-        filter: function (item) {
-            // returns true if item contains New South Wales region
-            return item.context
-                .map(function (i) {
-                    // ID is in the form {index}.{id} per https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-                    // This example searches for the `region`
-                    // named `New South Wales`.
-                    return (
-                        i.id.split('.').shift() === 'region' ||
-                        i.id.split('.').shift() === 'address'
-                    );
-                })
-                .reduce(function (acc, cur) {
-                    return acc || cur;
-                });
-        },
     })
 
     g.addTo(input)
@@ -156,7 +191,8 @@ function addInput() {
 }
 
 function getRoutes() {
-
+    let si = map.getStyle().layers
+ 
     let distText = document.getElementById('distance')
     let L = lists.querySelectorAll("pre")
 
@@ -182,7 +218,7 @@ function getRoutes() {
                     "coordinates": parseObj.geometry.coordinates
                 },
                 "properties": {
-                    "name": parseObj.place_name
+                    "name": parseObj.text
                 }
             })
         })
@@ -224,14 +260,23 @@ function getRoutes() {
                             },
                             paint: {
                                 'line-color': '#ff7e5f',
-                                'line-width': 3,
+                                "line-width": {
+                                    'base': 1.5,
+                                    'stops': [
+                                        [14, 5],
+                                        [18, 20],
+                                    ],
+                                },
+                                "line-dasharray": [0.1, 1.8]
                             },
                         })
 
                         let length = turf.length(curvedLine, {
                             units: 'meters'
                         });
+
                         distance.push(length)
+
                     } else {
                         map.addLayer({
                             id: `route${new Date().getMilliseconds()}`,
@@ -250,7 +295,14 @@ function getRoutes() {
                             },
                             paint: {
                                 'line-color': '#ff7e5f',
-                                'line-width': 3,
+                                "line-width": {
+                                    'base': 1.5,
+                                    'stops': [
+                                        [14, 5],
+                                        [18, 20],
+                                    ],
+                                },
+                                "line-dasharray": [0.1, 1.8]
                             },
                         })
 
@@ -260,17 +312,17 @@ function getRoutes() {
 
                     let sum = distance.map((a) => {
                         let km = a / 1000
-                        return parseFloat(km.toFixed(2))
+                        return parseFloat(km.toFixed(0))
                     }).reduce((a, b) => {
                         return a + b
                     })
 
                     distText.innerText = `${sum} of kilometers`
 
-                    let defaultLayer = 83
-
+                    let defaultLayer =toTalLayer.slice(-1)
+                    
                     let lineCollection = map.getStyle().layers.slice(defaultLayer)
-
+                   
                     let color = document.getElementById("change-color")
 
                     color.addEventListener('change',(val)=>{
@@ -313,20 +365,10 @@ function getRoutes() {
 
             let popup = new mapboxgl.Popup({
                 closeButton: false,
-                closeOnClick: false
+                closeOnClick: false,
             })
 
-            el.addEventListener('mouseenter', () => {
-                let latlng = marker.geometry.coordinates
-                let prop = marker.properties.name
-
-                popup.setLngLat(latlng).setHTML(`<h3>Place </h3><p>${prop}</p>`).addTo(map);
-            })
-
-            el.addEventListener('mouseleave', () => {
-                map.getCanvas().style.cursor = '';
-                popup.remove();
-            });
+            popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`).addTo(map);
 
         });
 
