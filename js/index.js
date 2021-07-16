@@ -12,72 +12,6 @@ let map = new mapboxgl.Map({
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-let toTalLayer =  []
-
-map.on('load',() => {
-    let si = map.getStyle().layers
-    toTalLayer.push(si.length)
-    
-   console.log(si)
-})
-
-document.getElementById('basemaps').addEventListener('change', function () {
-    map.setStyle(`mapbox://styles/mapbox/${this.value}`)
-       
-   
-    let si = map.getStyle().layers
-    
-    toTalLayer.push(si.length)
-
-    
-    // console.log(toTalLayer.slice(-1))
- 
- 
-   
-})
-
-
-
-// map.on('style.load',()=> {
-//     document.getElementById('basemaps').addEventListener('change', function () {
-//         map.setStyle(`mapbox://styles/mapbox/${this.value}`)
-//         let si = map.getStyle().layers
-//         toTalLayer = si.length
-//     });
-// })
-
-// function ChangeBaseMap(option) {
-//     var optionVal = option.value;
-//     map.setStyle(`mapbox://styles/mapbox/${optionVal}`);
-//     let si = map.getStyle().layers
-    
-//    toTalLayer = si.length
-// }
-
-
-
-function ShowHidePoint() {
-    let check = document.getElementById("checkpoint")
-    let classPopup = document.querySelectorAll('.point-label')
-    let marker = document.querySelectorAll(".marker")
-
-    if (check.checked == false) {
-        marker.forEach((marker,i) => {
-            marker.style.visibility = 'hidden'
-        })
-        classPopup.forEach((classPopup,i) => {
-            classPopup.style.visibility = 'hidden'
-        })
-    } else {
-        marker.forEach((marker,i) => {
-            marker.style.visibility = 'visible'
-        })
-        classPopup.forEach((classPopup,i) => {
-            classPopup.style.visibility = 'visible'
-        })
-    }
-}
-
 let results = document.getElementById('result');
 
 let lists = document.getElementById('listings')
@@ -85,12 +19,38 @@ let lists = document.getElementById('listings')
 let ol = document.createElement('ol')
 ol.className = 'numbered'
 
+// Increament variable for unique id
 let i = 0;
 let x = []
-let marker = new mapboxgl.Marker()
-let marker2 = ''
+let geocodermarker = new mapboxgl.Marker()
 
-function addInput() {
+// Show/hide the points
+function ShowHidePoint() {
+    let check = document.getElementById("checkpoint")
+    let classPopup = document.querySelectorAll('.point-label')
+    let marker = document.querySelectorAll(".marker")
+
+    if (check.checked == false) {
+        marker.forEach((marker, i) => {
+            marker.style.visibility = 'hidden'
+        })
+        classPopup.forEach((classPopup, i) => {
+            classPopup.style.visibility = 'hidden'
+        })
+    } else {
+        marker.forEach((marker, i) => {
+            marker.style.visibility = 'visible'
+        })
+        classPopup.forEach((classPopup, i) => {
+            classPopup.style.visibility = 'visible'
+        })
+    }
+}
+
+// Create address input
+function addInput(TotalLayer) {
+
+    let TotalDefLayer = TotalLayer
 
     let li = document.createElement('li')
     li.className = 'list-itn'
@@ -111,7 +71,7 @@ function addInput() {
     btn.className = 'btn-remove'
     btn.id = `btn${++i}`
     btn.onclick = function () {
-        
+
         let classPopup = document.querySelectorAll('.point-label')
 
         let L = lists.querySelectorAll("pre")
@@ -139,14 +99,14 @@ function addInput() {
                 })
             }
 
-            let defLayer = map.getStyle().layers.slice(toTalLayer.slice(-1)[0], this.length)
+            let defLayer = map.getStyle().layers.slice(TotalDefLayer.slice(-1)[0], this.length)
 
             defLayer.forEach(element => {
                 map.removeLayer(element.id)
             });
 
             getRoutes()
-        
+            setDefStyle()
         }
     }
 
@@ -163,87 +123,91 @@ function addInput() {
     ol.appendChild(li)
     lists.appendChild(ol)
 
-    let g = new MapboxGeocoder({
+    let geocoder = new MapboxGeocoder({
         accessToken: mapbox_token,
         mapboxgl: mapboxgl,
         placeholder: null,
     })
 
-    g.addTo(input)
-    g.on('result', function (e) {
+    geocoder.addTo(input)
+    geocoder.on('result', function (e) {
 
         pre.innerText = JSON.stringify(e.result);
         p.innerText = e.result.text
         a.innerText = e.result.geometry.coordinates.map(a => a.toFixed(3)).join(" , ")
- 
+
         x.push(e.result.geometry.coordinates)
 
-        marker.setLngLat(e.result.geometry.coordinates).addTo(map)
+        geocodermarker.setLngLat(e.result.geometry.coordinates).addTo(map)
         map.flyTo({
             center: e.result.geometry.coordinates,
             essential: true
         })
     });
 
-    g.on('clear', function (e) {
+    geocoder.on('clear', function (e) {
         pre.innerText = ''
     })
 }
 
-function getRoutes() {
-    let si = map.getStyle().layers
- 
+// Get input coordinates
+let GetCoordinate = listCoordinate => {
+    let data = {
+        "type": "FeatureCollection",
+        "features": []
+    }
+
+    listCoordinate.forEach((b) => {
+        let parseObj = JSON.parse(b.innerText)
+        data.features.push({
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": parseObj.geometry.coordinates
+            },
+            "properties": {
+                "name": parseObj.text
+            }
+        })
+    })
+
+    return data
+
+}
+
+let defTotalLayer;
+
+let getRoutes = () => {
+
     let distText = document.getElementById('distance')
     let L = lists.querySelectorAll("pre")
 
     if (L.length < 2) {
-        alert('Need at least 2 inputs')
+        console.log('Need at least 2 inputs')
     } else {
-
         let input = document.getElementById("checkpoint")
         input.checked = true
         input.disabled = false
+        let distance = []
+        let geojsonMarker = GetCoordinate(L)
 
-        let data = {
-            "type": "FeatureCollection",
-            "features": []
-        }
+        let fetList = geojsonMarker.features
 
-        L.forEach((b) => {
-            let parseObj = JSON.parse(b.innerText)
-            data.features.push({
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": parseObj.geometry.coordinates
-                },
-                "properties": {
-                    "name": parseObj.text
-                }
-            })
-        })
-
-        let fetList = data.features
-
-        let existRoute = fetList.map((a) => {
+        let points = fetList.map((a) => {
             return [a.geometry.coordinates]
         })
 
-        let distance = []
+        for (let i = 0; i < points.length; i++) {
+            if (i + 1 !== points.length) {
 
-        for (let i = 0; i < existRoute.length; i++) {
-            if (i + 1 !== existRoute.length) {
-
-                let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${existRoute[i]};${existRoute[i + 1]}?steps=true&geometries=geojson&overview=full&access_token=${mapbox_token}`
-
-                let id = `${fetList[i].properties.name}${i}`
+                let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${points[i]};${points[i + 1]}?steps=true&geometries=geojson&overview=full&access_token=${mapbox_token}`
 
                 $.get(url, (data) => {
 
                     if (data.routes.length === 0) {
-
-                        let start = turf.point(existRoute[i][0])
-                        let end = turf.point(existRoute[i + 1][0])
+                        // Use turf curve line if route unvailable
+                        let start = turf.point(points[i][0])
+                        let end = turf.point(points[i + 1][0])
 
                         let curvedLine = turf.greatCircle(start, end)
 
@@ -271,10 +235,12 @@ function getRoutes() {
                             },
                         })
 
+                        // Calculate length of turf curve line in meters 
                         let length = turf.length(curvedLine, {
                             units: 'meters'
                         });
 
+                        // Push result to distance variable
                         distance.push(length)
 
                     } else {
@@ -306,78 +272,185 @@ function getRoutes() {
                             },
                         })
 
+                        // Push default distance property from mapbox direction result
                         distance.push(data.routes[0].distance)
 
                     }
 
-                    let sum = distance.map((a) => {
-                        let km = a / 1000
-                        return parseFloat(km.toFixed(0))
-                    }).reduce((a, b) => {
-                        return a + b
-                    })
+                    let totalLength = SumLength(distance)
 
-                    distText.innerText = `${sum} of kilometers`
+                    // Push total length to side bar
+                    distText.innerText = `${totalLength} of kilometers`
 
-                    let defaultLayer =toTalLayer.slice(-1)
-                    
-                    let lineCollection = map.getStyle().layers.slice(defaultLayer)
-                   
+                    defaultLayer = defTotalLayer
+
+                    let lineCollection = map.getStyle().layers.slice(defaultLayer.length)
+                
                     let color = document.getElementById("change-color")
 
-                    color.addEventListener('change',(val)=>{
+                    color.addEventListener('change', (val) => {
                         let color = val.srcElement.value
-                            lineCollection.forEach(line => {
-                                map.setPaintProperty(line.id, 'line-color', color);
-                            })
+                        lineCollection.forEach(line => {
+                            map.setPaintProperty(line.id, 'line-color', color);
+                        })
                     })
-
                 }).fail(function () {
                     alert("The distance exceeds the limit (10.000 km)");
                 })
             }
         }
 
+        // Hide the geocoder form
         let disInput = document.querySelectorAll('.list-itn div')
 
         for (let i = 0; i < disInput.length; i++) {
             disInput[i].style.display = 'none'
         }
 
-        // add markers to map
-        data.features.forEach(function (marker, i) {
-            // create a HTML element for each feature
-            let el = document.createElement('div');
-            el.className = 'marker';
-            el.innerHTML = '<span><b>' + (i + 1) + '</b></span>'
-            el.id = `marker${i}`
-            // make a marker for each feature and add it to the map
-            new mapboxgl.Marker(el)
-                .setLngLat(marker.geometry.coordinates)
-                .addTo(map);
+        // Remove geocoder marker
+        geocodermarker.remove()
 
-            el.addEventListener('click', () => {
-                map.flyTo({
-                    center: marker.geometry.coordinates,
-                    zoom: 13,
-                });
+        // Function to add markers and its label
+        addCustomMarker(geojsonMarker)
+
+        // Fit map to points function
+        fitBounds(geojsonMarker)
+
+    }
+}
+
+let SumLength = distancelist => {
+    let sum = distancelist.map((a) => {
+        let km = a / 1000
+        return parseFloat(km.toFixed(0))
+    }).reduce((a, b) => {
+        return a + b
+    })
+
+    return sum
+}
+
+// Add custom marker to the map including its label
+let addCustomMarker = markers => {
+    markers.features.forEach(function (marker, i) {
+        // create a HTML element for each feature
+        let el = document.createElement('div');
+        el.className = 'marker';
+        el.innerHTML = '<span><b>' + (i + 1) + '</b></span>'
+        el.id = `marker${i}`
+        // make a marker for each feature and add it to the map
+        new mapboxgl.Marker(el)
+            .setLngLat(marker.geometry.coordinates)
+            .addTo(map);
+
+        el.addEventListener('click', () => {
+            map.flyTo({
+                center: marker.geometry.coordinates,
+                zoom: 13,
+            });
+        })
+
+        let popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+        })
+
+        popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`).addTo(map);
+
+    });
+}
+
+let fitBounds = marker => {
+    let bbox = turf.bbox(marker);
+    map.fitBounds(bbox, {
+        padding: 70,
+    })
+}
+
+let RemoveStep = (totalLayer) => {
+    let classPopup = document.querySelectorAll('.point-label')
+    let L = lists.querySelectorAll("pre")
+
+    if (L.length <= 2) {
+        alert('Need at least 2 inputs')
+    } else {
+        classPopup.forEach(a => {
+            a.remove()
+        })
+        let index = $(this).parent('li').index()
+        let id = parseInt(index)
+
+        ol.removeChild(ol.childNodes[id]);
+
+        let removeMarker = document.querySelectorAll(`#marker${index}`)
+
+        if (removeMarker.length === 1) {
+            removeMarker[0].remove()
+        } else {
+            removeMarker.forEach(marker => {
+                marker.remove()
             })
+        }
 
-            let popup = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-            })
+        let defLayer = map.getStyle().layers.slice(totalLayer.slice(-1)[0], this.length)
 
-            popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`).addTo(map);
-
+        defLayer.forEach(element => {
+            map.removeLayer(element.id)
         });
 
-        marker.remove()
+        getRoutes()
 
-        let bbox = turf.bbox(data);
-        map.fitBounds(bbox, {
-            padding: 70,
-        })
     }
+}
 
+map.on('style.load', function () {
+
+    defTotalLayer = map.getStyle().layers
+
+})
+map.on('load', () => {
+
+    let btnGetRoute = document.getElementById('getRoutes')
+
+    btnGetRoute.addEventListener('click', getRoutes)
+
+    let totalLayers = map.getStyle().layers
+
+    let addInputBtn = document.getElementById('addInput')
+
+    addInputBtn.addEventListener('click', () => {
+        addInput(totalLayers)
+    })
+
+    document.getElementById('basemaps').addEventListener('change', function () {
+
+        map.setStyle(`mapbox://styles/ivproject/${this.value}`)
+
+        getRoutes()
+
+        if (this.value === "ckr6t9kkq0ygv18qi5sazmai1") {
+            let label = document.querySelectorAll(".point-label")
+            label.forEach(label => {
+                label.style.color = "white"
+            })
+        }
+        let color = document.getElementById("change-color")
+
+        color.addEventListener('change', (val) => {
+            let newcol = val.srcElement.value
+            defTotalLayer = defTotalLayer
+            let refreshDefLayer = map.getStyle().layers
+
+            let sliceLayer = refreshDefLayer.slice(defTotalLayer.length, refreshDefLayer.length)
+
+            sliceLayer.forEach(line => {
+                map.setPaintProperty(line.id, 'line-color', newcol);
+            })
+        })
+    });
+})
+
+let setDefStyle = () => {
+    let existBasemapValue = document.getElementById('basemaps').value
+    map.setStyle(`mapbox://styles/ivproject/${existBasemapValue}`)
 }
