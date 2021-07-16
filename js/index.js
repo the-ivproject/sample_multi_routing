@@ -464,3 +464,4 @@ let changeToWhite = (bVale) => {
         label.style.color = "white"
     })
 }
+}
