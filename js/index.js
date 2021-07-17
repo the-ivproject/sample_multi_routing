@@ -1,6 +1,6 @@
 
 const template = {
-    token:'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuOWltYzJyeGMycW1jNDVlbDQwejQifQ.97Y2eucdbVp1F2Ow8EHgBQ',
+    token:'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuMjZvajAzZDAyd3BibDJvNmJ4bjMifQ.5FpaSBhuOWEDm3m8PQp3Zg',
     default_layer:'mapbox://styles/ivproject/ckr65sxbr12ci17m5lqeswh81',
     map_container_id: 'map',
     map_center:[-96, 37.8],
@@ -42,7 +42,7 @@ map.addControl(new mapboxgl.NavigationControl(), template.zoom_control_pos);
 let lists = document.getElementById('listings')
 
 let ol = document.createElement('ol')
-ol.className = 'numbered'
+ol.className = 'numbered mx-0 my-3'
 
 // Increament variable for unique id
 let i = 0;
@@ -87,14 +87,14 @@ let addInput = (TotalLayer) => {
     pre.style.display = 'none'
 
     let p = document.createElement('p')
-    p.className = 'place-name'
+    p.className = 'place-name text-lg text-black font-bold'
 
     let a = document.createElement('a')
-    a.className = 'xy'
+    a.className = 'xy text-sm text-black font-light block'
 
     let btn = document.createElement('button')
-    btn.innerText = 'X'
-    btn.className = 'btn-remove'
+    btn.innerText = 'Remove'
+    btn.className = 'btn-remove space-x-0 bg-red-500 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-xs my-2'
     btn.id = `btn${++i}`
     btn.onclick = function() {
 
@@ -112,9 +112,21 @@ let addInput = (TotalLayer) => {
             let index = $(this).parent('li').index()
 
             let id = parseInt(index)
+
+            console.log(id)
             
             ol.removeChild(ol.childNodes[id]);
             
+            let defLayer = map.getStyle().layers.slice(TotalDefLayer.slice(-1)[0], this.length)
+
+            defLayer.forEach(element => {
+                map.removeLayer(element.id)
+            });
+
+            getRoutes()
+
+            setDefStyle()
+
             let removeMarker = document.querySelectorAll(`#marker${index}`)
 
             if (removeMarker.length === 1) {
@@ -125,21 +137,14 @@ let addInput = (TotalLayer) => {
                 })
             }
 
-            let defLayer = map.getStyle().layers.slice(TotalDefLayer.slice(-1)[0], this.length)
-
-            defLayer.forEach(element => {
-                map.removeLayer(element.id)
-            });
-
-            getRoutes()
-
-            setDefStyle()
         }
     }
 
     let input = document.createElement('div')
     input.id = `itn${+i}`
-    input.style.padding = '10px'
+    // input.style.padding = '10px 0'
+    input.className = 'py-2 space-x-0'
+    
 
     li.appendChild(input)
     li.appendChild(p)
@@ -356,7 +361,6 @@ let addCustomMarker = markers => {
     let label = []
 
     markers.features.forEach((marker, i) => {
-
         // create a HTML element for each feature
         let el = document.createElement('div');
         el.className = 'marker';
@@ -420,7 +424,7 @@ let RemoveStep = (totalLayer) => {
         ol.removeChild(ol.childNodes[id]);
 
         let removeMarker = document.querySelectorAll(`#marker${index}`)
-
+        console.log(removeMarker)
         if (removeMarker.length === 1) {
             removeMarker[0].remove()
         } else {
@@ -459,8 +463,8 @@ map.on('load', () => {
         addInput(totalLayers)
     })
 
-    document.getElementById('basemaps').addEventListener('change', () => {
-
+    document.getElementById('basemaps').addEventListener('change', function() {
+ 
         map.setStyle(`mapbox://styles/ivproject/${this.value}`)
 
         getRoutes()

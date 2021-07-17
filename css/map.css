@@ -1,134 +1,116 @@
 body {
-  color: #404040;
-  font-family: 'Montserrat', sans-serif;
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-* {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.sidebar {
-  position: absolute;
-  width: 33.3333%;
-  height: 100%;
-  top: 0;
-  right: 0;
-  overflow: hidden;
-  border-right: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 20px;
-}
-
-.map {
-  position: absolute;
-  right: 33.3333%;
-  width: 66.6666%;
-  top: 0;
-  bottom: 0;
-}
-
-ul,
-ol {
-  list-style-type: none;
-}
-
-h1 {
-  font-size: 30px;
-  margin: 0;
-  font-weight: 400;
-  line-height: 20px;
-  padding: 20px 2px;
-  font-weight: bold;
-  color: #000;
-}
-
-a {
-  color: #404040;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #101010;
-}
-
-.heading {
-  background: #fff;
-  /* border-bottom: 1px solid #eee; */
-  min-height: 60px;
-  /* line-height: 60px; */
-  padding: 0 20px;
-  /* background-color: #00853e; */
-  color: #fff;
-}
-
-.listings {
-  /* height: 100%; */
-  overflow: auto;
-  padding-bottom: 60px;
-  padding: 20px;
-  border-bottom: 1px solid rgb(201, 201, 201);
-}
-
-.listings .item {
-  display: block;
-  border-bottom: 1px solid #eee;
-  padding: 10px;
-  text-decoration: none;
-}
-
-.listings .item:last-child {
-  border-bottom: none;
-}
-
-.listings .item .title {
-  display: block;
-  color: #00853e;
-  font-weight: 700;
-}
-
-.listings .item .title small {
-  font-weight: 400;
-}
-
-.listings .item.active .title,
-.listings .item .title:hover {
-  color: #8cc63f;
-}
-
-.listings .item.active {
-  background-color: #f8f8f8;
-}
-
+/* width */
 ::-webkit-scrollbar {
   width: 3px;
-  height: 3px;
-  border-left: 0;
-  background: rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
 }
 
+/* Track */
 ::-webkit-scrollbar-track {
-  background: none;
+  background: #f1f1f1; 
 }
-
+ 
+/* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #00853e;
-  border-radius: 0;
+  background: #888; 
 }
 
-.clearfix {
-  display: block;
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
-.clearfix:after {
-  content: '.';
-  display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+#basemaps-wrapper {
+  z-index: 9999;
+  top: 10px;
+  right: 20px;
+}
+
+#basemaps {
+  font-size: 16px;
+  padding: 6px 12px;
+  border: none;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+  border-radius: 3px;
+}
+
+.legend {
+  border-top: 1px solid #00000014;
+}
+
+#listings {
+  height:72vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#legend {
+  position: absolute ;
+  bottom: 10px;
+  width: 45vh;
+  background-color: white;
+  z-index: 9999;
+}
+
+label {
+  font-size: 12px;
+  font-weight: normal;
+  color: black;
+  margin-left: 0px !important;
+}
+
+#change-color {
+  margin-left: -1px;
+}
+
+ol {
+  list-style-type: none;
+  counter-reset: 0;
+}
+
+.list-itn {
+  position: relative;
+  margin: 7px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  counter-increment: item
+}
+
+.list-itn:before {
+  content: '';
+  background-color: #4338ca;
+  position: absolute;
+  bottom: 0;
+  top: 27px;
+  left: 2px;
+  width: 4px;
+  height: 11vh;
+}
+
+.list-itn:after {
+  content: counter(item);
+  text-align: center;
+  display: inline-block;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  position: absolute;
+  left: -9px;
+  top: 25%;
+  transform: translateY(-50%);
+  padding: 3px;
+  font-size: 12px;
+  width: 25px;
+  height: 25px;
+  background-color: #4338ca
 }
 
 .mapboxgl-popup {
@@ -179,6 +161,7 @@ p {
   margin-top: -15px;
 }
 
+
 .marker {
   width: 0;
   height: 0;
@@ -201,169 +184,12 @@ p {
   transform: rotateZ(-135deg);
 }
 
-.marker b {
-  transform: rotateZ(135deg)
-}
-
-
-#geocoder {
-  z-index: 1;
-  margin: 20 px;
-}
-
-.mapboxgl-ctrl-geocoder {
-  min-width: 100%;
-}
-
-ol {
-  list-style-type: none;
-  counter-reset: 0;
-}
-
-.list-itn {
-  position: relative;
-  margin: 7px;
-  padding-bottom: 5px;
-  padding-left: 20px;
-  counter-increment: item
-}
-
-.list-itn:before {
-  content: '';
-  background-color: #4338ca;
-  position: absolute;
-  bottom: 0;
-  top: 22px;
-  left: 0px;
-  width: 3px;
-  height: 100%;
-}
-
-.list-itn:after {
-  content: counter(item);
-  text-align: center;
-  display: inline-block;
-  color: white;
-  font-weight: bold;
-  border-radius: 50%;
-  position: absolute;
-  left: -13px;
-  top: 30%;
-  transform: translateY(-50%);
-  padding: 4px;
-  font-size: 15px;
-  width: 20px;
-  height: 20px;
-  background-color: #4338ca
-}
-
-.place-name {
-  margin: 0;
-  padding: 3px 11px;
-  font-weight: 700;
-  color: #000;
-}
-
-.mapboxgl-ctrl-geocoder--button svg {
-  display: none;
-}
-
-input[type="text"]:disabled {
-  background: #dddddd;
-}
-
-.xy {
-  padding: 0 11px;
-  color: #000;
-  font-weight: 300;
-  display: block;
-  font-size: 12px;
-}
-
-.numbered {
-  padding: 5px 15px;
-}
-
-button {
-  padding: 4px;
-  width: 30%;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-}
-
-.add-address {
-  background-color: white;
-  border: 3px solid #000;
-  color: black;
-  margin: 8px;
-}
-
-.add-routes {
-  background-color: white;
-  border: 3px solid #4338ca;
-  color: black;
-  margin: 8px;
-}
-
-.btn-remove {
-  margin: 7px 11px;
-  color: white;
-  font-weight: bold;
-  background-color: #dc3545;
-  width: 30px;
-  padding: 4px;
-  font-size: 10px;
-}
-
-.mapboxgl-ctrl-geocoder .suggestions {
-  position: relative !important;
-}
-
-.mapboxgl-popup-content {
-  padding: 5px;
-  border-radius: 3px;
-}
-
-#basemaps-wrapper {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  z-index: 9999;
-}
-
-#basemaps {
-  font-size: 16px;
-  padding: 6px 12px;
-  border: none;
-  box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
-  border-radius: 3px;
-}
-
-.legend {
-  padding-bottom: 80px;
-  padding: 20px;
-}
-
-.legend input {
-  margin: 8px;
-}
-
-.legend h2 {
-  font-size: 18px;
-  color: #000;
-  font-weight: bold;
-  margin: 8px;
-}
-
-.legend label {
-  font-size: 12px;
-}
-
 .point-label {
   text-align: center;
   padding-bottom: 5px;
   color: #ff7e5f;
+}
+
+.marker b {
+  transform: rotateZ(135deg)
 }
