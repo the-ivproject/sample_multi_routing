@@ -25,7 +25,7 @@ let x = []
 let geocodermarker = new mapboxgl.Marker()
 
 // Show/hide the points
-function ShowHidePoint() {
+let ShowHidePoint = () => {
     let check = document.getElementById("checkpoint")
     let classPopup = document.querySelectorAll('.point-label')
     let marker = document.querySelectorAll(".marker")
@@ -48,7 +48,7 @@ function ShowHidePoint() {
 }
 
 // Create address input
-function addInput(TotalLayer) {
+let addInput = (TotalLayer) => {
 
     let TotalDefLayer = TotalLayer
 
@@ -179,7 +179,6 @@ let defTotalLayer;
 
 let getRoutes = () => {
 
-    let distText = document.getElementById('distance')
     let L = lists.querySelectorAll("pre")
 
     if (L.length < 2) {
@@ -188,7 +187,7 @@ let getRoutes = () => {
         let input = document.getElementById("checkpoint")
         input.checked = true
         input.disabled = false
-        let distance = []
+
         let geojsonMarker = GetCoordinate(L)
 
         let fetList = geojsonMarker.features
@@ -197,108 +196,7 @@ let getRoutes = () => {
             return [a.geometry.coordinates]
         })
 
-        for (let i = 0; i < points.length; i++) {
-            if (i + 1 !== points.length) {
-
-                let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${points[i]};${points[i + 1]}?steps=true&geometries=geojson&overview=full&access_token=${mapbox_token}`
-
-                $.get(url, (data) => {
-
-                    if (data.routes.length === 0) {
-                        // Use turf curve line if route unvailable
-                        let start = turf.point(points[i][0])
-                        let end = turf.point(points[i + 1][0])
-
-                        let curvedLine = turf.greatCircle(start, end)
-
-                        map.addLayer({
-                            id: `routecustom${new Date().getMilliseconds()}`,
-                            type: 'line',
-                            source: {
-                                type: 'geojson',
-                                data: curvedLine,
-                            },
-                            layout: {
-                                'line-join': 'round',
-                                'line-cap': 'round',
-                            },
-                            paint: {
-                                'line-color': '#ff7e5f',
-                                "line-width": {
-                                    'base': 1.5,
-                                    'stops': [
-                                        [14, 5],
-                                        [18, 20],
-                                    ],
-                                },
-                                "line-dasharray": [0.1, 1.8]
-                            },
-                        })
-
-                        // Calculate length of turf curve line in meters 
-                        let length = turf.length(curvedLine, {
-                            units: 'meters'
-                        });
-
-                        // Push result to distance variable
-                        distance.push(length)
-
-                    } else {
-                        map.addLayer({
-                            id: `route${new Date().getMilliseconds()}`,
-                            type: 'line',
-                            source: {
-                                type: 'geojson',
-                                data: {
-                                    type: 'Feature',
-                                    properties: {},
-                                    geometry: data.routes[0].geometry,
-                                },
-                            },
-                            layout: {
-                                'line-join': 'round',
-                                'line-cap': 'round',
-                            },
-                            paint: {
-                                'line-color': '#ff7e5f',
-                                "line-width": {
-                                    'base': 1.5,
-                                    'stops': [
-                                        [14, 5],
-                                        [18, 20],
-                                    ],
-                                },
-                                "line-dasharray": [0.1, 1.8]
-                            },
-                        })
-
-                        // Push default distance property from mapbox direction result
-                        distance.push(data.routes[0].distance)
-
-                    }
-
-                    let totalLength = SumLength(distance)
-
-                    // Push total length to side bar
-                    distText.innerText = `${totalLength} of kilometers`
-
-                    defaultLayer = defTotalLayer
-
-                    let lineCollection = map.getStyle().layers.slice(defaultLayer.length)
-                
-                    let color = document.getElementById("change-color")
-
-                    color.addEventListener('change', (val) => {
-                        let color = val.srcElement.value
-                        lineCollection.forEach(line => {
-                            map.setPaintProperty(line.id, 'line-color', color);
-                        })
-                    })
-                }).fail(function () {
-                    alert("The distance exceeds the limit (10.000 km)");
-                })
-            }
-        }
+        getDirection(points)
 
         // Hide the geocoder form
         let disInput = document.querySelectorAll('.list-itn div')
@@ -319,6 +217,121 @@ let getRoutes = () => {
     }
 }
 
+let getDirection = (points) => {
+
+    let distance = []
+
+    let distText = document.getElementById('distance')
+
+    for (let i = 0; i < points.length; i++) {
+        if (i + 1 !== points.length) {
+
+            let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${points[i]};${points[i + 1]}?steps=true&geometries=geojson&overview=full&access_token=${mapbox_token}`
+
+            $.get(url, (data) => {
+
+                if (data.routes.length === 0) {
+                    // Use turf curve line if route unvailable
+                    let start = turf.point(points[i][0])
+                    let end = turf.point(points[i + 1][0])
+
+                    let curvedLine = turf.greatCircle(start, end)
+
+                    map.addLayer({
+                        id: `turfline${i}`,
+                        type: 'line',
+                        source: {
+                            type: 'geojson',
+                            data: curvedLine,
+                        },
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round',
+                        },
+                        paint: {
+                            'line-color': '#ff7e5f',
+                            "line-width": {
+                                'base': 1.5,
+                                'stops': [
+                                    [14, 5],
+                                    [18, 20],
+                                ],
+                            },
+                            "line-dasharray": [0.1, 1.8]
+                        },
+                    })
+
+                    // Calculate length of turf curve line in meters 
+                    let length = turf.length(curvedLine, {
+                        units: 'meters'
+                    });
+
+                    // Push result to distance variable
+                    distance.push(length)
+
+                } else {
+                    map.addLayer({
+                        id: `route${i}`,
+                        type: 'line',
+                        source: {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: data.routes[0].geometry,
+                            },
+                        },
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round',
+                        },
+                        paint: {
+                            'line-color': '#ff7e5f',
+                            "line-width": {
+                                'base': 1.5,
+                                'stops': [
+                                    [14, 5],
+                                    [18, 20],
+                                ],
+                            },
+                            "line-dasharray": [0.1, 1.8]
+                        },
+                    })
+
+                    // Push default distance property from mapbox direction result
+                    distance.push(data.routes[0].distance)
+
+                }
+
+                // Push total length to side bar
+                setDistance(distText, distance)
+
+                chaneLineColor(defTotalLayer)
+
+            }).fail(function () {
+                alert("The distance exceeds the limit (10.000 km)");
+            })
+        }
+    }
+}
+
+let setDistance = (el, distance) => {
+    el.innerText = `${SumLength(distance)} of kilometers`
+}
+
+let chaneLineColor = (totallayer) => {
+    let lineCollection = map.getStyle().layers.slice(totallayer.length)
+
+    let color = document.getElementById("change-color")
+
+    color.addEventListener('change', (val) => {
+        let color = val.srcElement.value
+        lineCollection.forEach(line => {
+            map.setPaintProperty(line.id, 'line-color', color);
+        })
+    })
+}
+
 let SumLength = distancelist => {
     let sum = distancelist.map((a) => {
         let km = a / 1000
@@ -332,7 +345,11 @@ let SumLength = distancelist => {
 
 // Add custom marker to the map including its label
 let addCustomMarker = markers => {
+
+    let label = []
+
     markers.features.forEach(function (marker, i) {
+
         // create a HTML element for each feature
         let el = document.createElement('div');
         el.className = 'marker';
@@ -355,9 +372,25 @@ let addCustomMarker = markers => {
             closeOnClick: false,
         })
 
-        popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`).addTo(map);
+        label.push(popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`))
 
     });
+
+    label.forEach(popup => {
+        popup.addTo(map)
+    })
+
+    let existLabel = document.querySelectorAll(".mapboxgl-popup")
+
+    removeDuplicateLabel(existLabel, label)
+}
+
+let removeDuplicateLabel = (el, label) => {
+    if (label.length != el.length) {
+        for (let i = 0; i < label.length - 1; i++) {
+            el[i].remove()
+        }
+    }
 }
 
 let fitBounds = marker => {
@@ -428,12 +461,6 @@ map.on('load', () => {
 
         getRoutes()
 
-        if (this.value === "ckr6t9kkq0ygv18qi5sazmai1") {
-            let label = document.querySelectorAll(".point-label")
-            label.forEach(label => {
-                label.style.color = "white"
-            })
-        }
         let color = document.getElementById("change-color")
 
         color.addEventListener('change', (val) => {
