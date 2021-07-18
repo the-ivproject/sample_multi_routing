@@ -1,48 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 
-        <link rel="stylesheet"
-            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-            type="text/css">
-        <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js">
-        </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.4/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
-        <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
-        <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+  <link rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+      type="text/css">
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js">
+  </script>
 
-        <!-- Import Mapbox GL Directions -->
-        <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
-        </script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
 
-        <link rel="stylesheet" href="css/map.css">
+  <!-- Import Mapbox GL Directions -->
+  <script src=https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.2/mapbox-gl-directions.js>
+  </script>
+
+  <link rel="stylesheet" href="css/map.css">
 </head>
-<body>
-    <div class="sidebar">
-        <div class="heading">
-            <h1> Itinerary <span id="distance" style="font-size: 14px;font-weight: normal;">0 of kilometers</span> </h1>
-        </div>
-        <div id="listings" class="listings">
-            <button id="addInput" class="add-address" > Add Place </button>
-            <button id="getRoutes" class="add-routes"> Get Route </button>
-        </div>
-        <div class="legend">
-            <h2> Legend </h2>
-            <input id="checkpoint" type="checkbox" name="checkbox" onclick="ShowHidePoint()" disabled="disabled"> </input>
-            <label for="checkbox">Show/Hide the Point</label>
-            <br>
-            <input id="change-color" type="color" name="change-color" ></input>
-            <label for="change-color">Change Route Line Color</label>
-        </div>
-    </div>
 
-    <div id="map" class="map">    
-        <div id="basemaps-wrapper">
+<body>
+  <div class="relative min-h-screen md:flex">
+    <!-- mobile menu bar -->
+    <!-- <div class="bg-gray-800 text-gray-100 flex justify-between md:hidden">
+   
+      <a href="#" class="block p-4 text-white font-bold">Better Dev</a>
+
+
+      <button class="mobile-menu-button p-4 focus:outline-none focus:bg-gray-700">
+        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div> -->
+
+    <!-- content -->
+    <div class="flex-1 p-0 text-2xl font-bold">
+      <div id="map" class="h-auto z-1">    
+        <div id="basemaps-wrapper" class="absolute top-10 right-20">
             <select id="basemaps" >
                 <option value="ckr65sxbr12ci17m5lqeswh81">Light</option>
                 <option value="ckr6t9kkq0ygv18qi5sazmai1">Dark</option>
@@ -50,11 +52,53 @@
                 <option value="ckr6szbj82plx17l285zjv04t">Outdoors</option>
             </select>
         </div> 
+     </div>
     </div>
 
-    <script script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="js/index.js"></script>
+    <!-- sidebar -->
+    <div
+      class="sidebar bg-white-800 text-blue-100 w-4/12 space-y-6 py-7 px-7 absolute inset-y-0 right-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+      <a href="#" class="text-black flex items-center space-x-2 px-4">
+        <h1 class="text-2xl font-extrabold"> Itinerary <span id="distance" style="font-size: 14px;font-weight: normal;">0 of kilometers</span> </h1>
+      </a>
+      <div class="px-4">
+        <button id="addInput" class="add-address bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold p-2 rounded ">
+          Add Place
+        </button>
+        <button id="getRoutes" class="add-address bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold p-2 rounded ">
+          Get Route
+        </button>
+      </div>
+      <!-- nav -->
+      <nav id="listings" class="px-4" >
+      </nav>
+        <div id="legend" class="legend space-x-2 px-4">
+          <label for="checkbox" class="inline-flex items-center mt-5">
+            <input  id="checkpoint" class="form-checkbox h-4 w-4 text-gray-600" type="checkbox" name="checkbox" onclick="ShowHidePoint()" disabled="disabled"><span class="ml-2 text-gray-700">Show/Hide the Point</span>
+         </label>
+          <br>
+          <label for="change-color" class="inline-flex items-center">
+            <input id="change-color" class="form-checkbox h-6 w-6 text-gray-600" type="color" name="change-color" onclick="ShowHidePoint()" ><span class="ml-2 text-gray-700">Change Route Line Color</span>
+         </label>
+      </div>
+    </div>
 
+  </div>
+
+  <script script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <script src="js/index.js"></script>
+
+  <script>
+    // grab everything we need
+    const btn = document.querySelector(".mobile-menu-button");
+    const sidebar = document.querySelector(".sidebar");
+
+    // add our event listener for the click
+    btn.addEventListener("click", () => {
+      sidebar.classList.toggle("-translate-x-full");
+    });
+  </script>
 </body>
+
 </html>
