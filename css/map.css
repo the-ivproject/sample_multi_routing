@@ -227,14 +227,14 @@ p {
     width: 100%;
   }
 
-  .main-frame  {
+  .main-frame {
     position: absolute;
     width: 100%;
     overflow: hidden;
   }
 
   .sidebar {
-    margin-top: 56px;
+    margin-top: 55px;
     transform: translate(100%);
     background-color: #ffffffdb;
     width: 100%;
