@@ -1,7 +1,13 @@
 
 const template = {
+    mapbox_username: 'ivproject',
     token:'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuMjZvajAzZDAyd3BibDJvNmJ4bjMifQ.5FpaSBhuOWEDm3m8PQp3Zg',
-    default_layer:'mapbox://styles/ivproject/ckr65sxbr12ci17m5lqeswh81',
+    custom_basemap_ids:{
+        Ligth:'ckr65sxbr12ci17m5lqeswh81',
+        Dark:'ckr6t9kkq0ygv18qi5sazmai1',
+        Streets:'ckr6t4e5j10wd18t2jw5vw3z5',
+        Outdoor:'ckr6szbj82plx17l285zjv04t'
+    },
     map_container_id: 'map',
     map_center:[-96, 37.8],
     default_zoom:2,
@@ -26,17 +32,33 @@ const template = {
 
 const mapbox_token = template.token
 
-mapboxgl.accessToken = mapbox_token
+mapboxgl.accessToken = template.token
 
 const map = new mapboxgl.Map({
     container: template.map_container_id,
-    style: template.default_layer,
+    // Set 'light' basemap as a default
+    style: `mapbox://styles/${template.mapbox_username}/${template.custom_basemap_ids.Ligth}`,
     center: template.map_center,
     zoom: template.default_zoom
 });
 
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), template.zoom_control_pos);
+
+// push the basemap list to the select option 
+let basemap_wrapper = document.getElementById('basemaps-wrapper')
+let select = document.createElement('select')
+select.id = 'basemaps'
+
+for(let i in Object.keys(template.custom_basemap_ids)) {
+    let option = document.createElement('option')
+    option.value = Object.values(template.custom_basemap_ids)[i]
+    option.innerHTML = Object.keys(template.custom_basemap_ids)[i]
+
+    select.appendChild(option)
+}
+
+basemap_wrapper.appendChild(select)
 
 // List of address result
 let lists = document.getElementById('listings')
@@ -49,29 +71,6 @@ let i = 0;
 
 // Default geocoderr marker
 let geocodermarker = new mapboxgl.Marker()
-
-// Show/hide the points
-let ShowHidePoint = () => {
-    let check = document.getElementById("checkpoint")
-    let classPopup = document.querySelectorAll('.point-label')
-    let marker = document.querySelectorAll(".marker")
-
-    if (check.checked == false) {
-        marker.forEach((marker) => {
-            marker.style.visibility = 'hidden'
-        })
-        classPopup.forEach((classPopup) => {
-            classPopup.style.visibility = 'hidden'
-        })
-    } else {
-        marker.forEach((marker) => {
-            marker.style.visibility = 'visible'
-        })
-        classPopup.forEach((classPopup) => {
-            classPopup.style.visibility = 'visible'
-        })
-    }
-}
 
 // Create address input
 let addInput = (TotalLayer) => {
@@ -112,8 +111,6 @@ let addInput = (TotalLayer) => {
             let index = $(this).parent('li').index()
 
             let id = parseInt(index)
-
-            console.log(id)
             
             ol.removeChild(ol.childNodes[id]);
             
@@ -416,9 +413,6 @@ let RemoveStep = (totalLayer) => {
     let classPopup = document.querySelectorAll('.point-label')
     let L = lists.querySelectorAll("pre")
 
-    if (L.length <= 2) {
-        alert('Need at least 2 inputs')
-    } else {
         classPopup.forEach(a => {
             a.remove()
         })
@@ -436,7 +430,7 @@ let RemoveStep = (totalLayer) => {
                 marker.remove()
             })
         }
-
+        
         let defLayer = map.getStyle().layers.slice(totalLayer.slice(-1)[0], this.length)
 
         defLayer.forEach(element => {
@@ -445,10 +439,34 @@ let RemoveStep = (totalLayer) => {
 
         getRoutes()
 
+}
+
+// Show/hide the points
+let ShowHidePoint = () => {
+    let check = document.getElementById("checkpoint")
+    let classPopup = document.querySelectorAll('.point-label')
+    let marker = document.querySelectorAll(".marker")
+
+    if (check.checked == false) {
+        marker.forEach((marker) => {
+            marker.style.visibility = 'hidden'
+        })
+        classPopup.forEach((classPopup) => {
+            classPopup.style.visibility = 'hidden'
+        })
+    } else {
+        marker.forEach((marker) => {
+            marker.style.visibility = 'visible'
+        })
+        classPopup.forEach((classPopup) => {
+            classPopup.style.visibility = 'visible'
+        })
     }
 }
 
 map.on('style.load', () => {
+
+    getRoutes()
 
     defTotalLayer = map.getStyle().layers
 
@@ -469,7 +487,7 @@ map.on('load', () => {
 
     document.getElementById('basemaps').addEventListener('change', function() {
  
-        map.setStyle(`mapbox://styles/ivproject/${this.value}`)
+        map.setStyle(`mapbox://styles/${template.mapbox_username}/${this.value}`)
 
         getRoutes()
 
@@ -493,5 +511,5 @@ map.on('load', () => {
 
 let setDefStyle = () => {
     let existBasemapValue = document.getElementById('basemaps').value
-    map.setStyle(`mapbox://styles/ivproject/${existBasemapValue}`)
+    map.setStyle(`mapbox://styles/${template.mapbox_username}/${existBasemapValue}`)
 }
