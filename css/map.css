@@ -227,6 +227,12 @@ p {
     width: 100%;
   }
 
+  .main-frame  {
+    position: absolute;
+    width: 100%;
+    overflow: hidden;
+  }
+
   .sidebar {
     margin-top: 56px;
     transform: translate(100%);
