@@ -1,17 +1,16 @@
-
 const template = {
     mapbox_username: 'ivproject',
-    token:'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuMjZvajAzZDAyd3BibDJvNmJ4bjMifQ.5FpaSBhuOWEDm3m8PQp3Zg',
-    custom_basemap_ids:{
-        Ligth:'ckr65sxbr12ci17m5lqeswh81',
-        Dark:'ckr6t9kkq0ygv18qi5sazmai1',
-        Streets:'ckr6t4e5j10wd18t2jw5vw3z5',
-        Outdoor:'ckr6szbj82plx17l285zjv04t'
+    token: 'pk.eyJ1IjoiaXZwcm9qZWN0IiwiYSI6ImNrcDZuMjZvajAzZDAyd3BibDJvNmJ4bjMifQ.5FpaSBhuOWEDm3m8PQp3Zg',
+    custom_basemap_ids: {
+        Ligth: 'ckr65sxbr12ci17m5lqeswh81',
+        Dark: 'ckr6t9kkq0ygv18qi5sazmai1',
+        Streets: 'ckr6t4e5j10wd18t2jw5vw3z5',
+        Outdoor: 'ckr6szbj82plx17l285zjv04t'
     },
     map_container_id: 'map',
-    map_center:[-96, 37.8],
-    default_zoom:2,
-    zoom_control_pos:'top-left',
+    map_center: [-96, 37.8],
+    default_zoom: 2,
+    zoom_control_pos: 'top-left',
     line_style: {
         'line-color': '#000',
         "line-width": {
@@ -24,7 +23,7 @@ const template = {
         "line-dasharray": [0.1, 2]
     },
     zoom_onclick: 13,
-    popup_prop:{
+    popup_prop: {
         closeButton: false,
         closeOnClick: false,
     }
@@ -50,7 +49,7 @@ let basemap_wrapper = document.getElementById('basemaps-wrapper')
 let select = document.createElement('select')
 select.id = 'basemaps'
 
-for(let i in Object.keys(template.custom_basemap_ids)) {
+for (let i in Object.keys(template.custom_basemap_ids)) {
     let option = document.createElement('option')
     option.value = Object.values(template.custom_basemap_ids)[i]
     option.innerHTML = Object.keys(template.custom_basemap_ids)[i]
@@ -95,15 +94,18 @@ let addInput = (TotalLayer) => {
     btn.innerText = 'Remove'
     btn.className = 'btn-remove space-x-0 bg-red-500 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-xs my-2'
     btn.id = `btn${++i}`
-    btn.onclick = function() {
+    btn.onclick = function () {
 
         let classPopup = document.querySelectorAll('.point-label')
 
         let L = lists.querySelectorAll("pre")
 
-        if (L.length <= 2) {
-            alert('Need at least 2 inputs')
+        let confirm = document.getElementById("confirm-input")
+        if (L.length < 2) {
+            confirm.style.display = "block"
         } else {
+            confirm.style.display = "none"
+            
             classPopup.forEach(a => {
                 a.remove()
             })
@@ -111,9 +113,9 @@ let addInput = (TotalLayer) => {
             let index = $(this).parent('li').index()
 
             let id = parseInt(index)
-            
+
             ol.removeChild(ol.childNodes[id]);
-            
+
             let defLayer = map.getStyle().layers.slice(TotalDefLayer.slice(-1)[0], this.length)
 
             defLayer.forEach(element => {
@@ -131,7 +133,7 @@ let addInput = (TotalLayer) => {
     input.id = `itn${+i}`
     // input.style.padding = '10px 0'
     input.className = 'py-2 space-x-0'
-    
+
     li.appendChild(input)
     li.appendChild(p)
     li.appendChild(a)
@@ -198,10 +200,11 @@ let defTotalLayer;
 let getRoutes = () => {
 
     let L = lists.querySelectorAll("pre")
-
+    let confirm = document.getElementById("confirm-input")
     if (L.length < 2) {
-        console.log('Need at least 2 inputs')
+        confirm.style.display = "block"
     } else {
+        confirm.style.display = "none"
         let input = document.getElementById("checkpoint")
         input.checked = true
         input.disabled = false
@@ -413,6 +416,9 @@ let RemoveStep = (totalLayer) => {
     let classPopup = document.querySelectorAll('.point-label')
     let L = lists.querySelectorAll("pre")
 
+    if (L.length <= 2) {
+        alert('Need at least 2 inputs')
+    } else {
         classPopup.forEach(a => {
             a.remove()
         })
@@ -430,7 +436,7 @@ let RemoveStep = (totalLayer) => {
                 marker.remove()
             })
         }
-        
+
         let defLayer = map.getStyle().layers.slice(totalLayer.slice(-1)[0], this.length)
 
         defLayer.forEach(element => {
@@ -439,6 +445,7 @@ let RemoveStep = (totalLayer) => {
 
         getRoutes()
 
+    }
 }
 
 // Show/hide the points
@@ -485,8 +492,8 @@ map.on('load', () => {
         addInput(totalLayers)
     })
 
-    document.getElementById('basemaps').addEventListener('change', function() {
- 
+    document.getElementById('basemaps').addEventListener('change', function () {
+
         map.setStyle(`mapbox://styles/${template.mapbox_username}/${this.value}`)
 
         getRoutes()

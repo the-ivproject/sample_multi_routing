@@ -64,21 +64,22 @@
         <button id="getRoutes" class="add-address bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold p-2 rounded ">
           Get Route
         </button>
+        <p id="confirm-input" class="confirm-input">Need at Least 2 inputs</p>
       </div>
       <!-- nav -->
       <nav id="listings" class="px-4" >
       
       </nav>
 
-        <div id="legend" class="legend space-x-2 px-4">
-          <label for="checkbox" class="inline-flex items-center mt-5">
-            <input  id="checkpoint" class="form-checkbox h-4 w-4 text-gray-600" type="checkbox" name="checkbox" onclick="ShowHidePoint()" disabled="disabled"><span class="ml-2 text-gray-700">Show/Hide the Point</span>
-         </label>
-          <br>
-          <label for="change-color" class="inline-flex items-center">
-            <input id="change-color" class="form-checkbox h-6 w-6 text-gray-600" type="color" name="change-color" onclick="ShowHidePoint()" ><span class="ml-2 text-gray-700">Change Route Line Color</span>
-         </label>
-      </div>
+      <div id="legend" class="legend space-x-2 px-4">
+        <label for="checkbox" class="inline-flex items-center mt-5">
+          <input  id="checkpoint" class="form-checkbox h-4 w-4 text-gray-600" type="checkbox" name="checkbox" onclick="ShowHidePoint()" disabled="disabled"><span class="ml-2 text-gray-700">Show/Hide the Point</span>
+      </label>
+        <br>
+        <label for="change-color" class="inline-flex items-center">
+          <input id="change-color" class="form-checkbox h-6 w-6 text-gray-600" type="color" name="change-color" onclick="ShowHidePoint()" ><span class="ml-2 text-gray-700">Change Route Line Color</span>
+      </label>
+    </div>
     </div>
 
   </div>
@@ -103,7 +104,7 @@
       sidebar.style.transform = "translate(100%)"
       btn.style.display = "block"
     })
-
+    
   </script>
 </body>
 
