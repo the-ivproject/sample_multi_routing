@@ -23,10 +23,6 @@ const template = {
         "line-dasharray": [0.1, 2]
     },
     zoom_onclick: 13,
-    popup_prop: {
-        closeButton: false,
-        closeOnClick: false,
-    }
 }
 
 const mapbox_token = template.token
@@ -131,7 +127,6 @@ let addInput = (TotalLayer) => {
 
     let input = document.createElement('div')
     input.id = `itn${+i}`
-    // input.style.padding = '10px 0'
     input.className = 'py-2 space-x-0'
 
     li.appendChild(input)
@@ -201,10 +196,12 @@ let getRoutes = () => {
 
     let L = lists.querySelectorAll("pre")
     let confirm = document.getElementById("confirm-input")
+
     if (L.length < 2) {
         confirm.style.display = "block"
     } else {
         confirm.style.display = "none"
+        
         let input = document.getElementById("checkpoint")
         input.checked = true
         input.disabled = false
@@ -370,7 +367,10 @@ let addCustomMarker = markers => {
             });
         })
 
-        let popup = new mapboxgl.Popup(template.popup_props)
+        let popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+        })
 
         label.push(popup.setLngLat(marker.geometry.coordinates).setHTML(`<h3 class="point-label">${marker.properties.name}</h3>`))
 
@@ -390,7 +390,7 @@ let removeDuplicateLabel = (el, label) => {
         for (let i = 0; i < label.length - 1; i++) {
             el[i].remove()
         }
-    }
+    } 
 }
 
 let removeDuplicateMarker = () => {
@@ -410,42 +410,6 @@ let fitBounds = marker => {
     map.fitBounds(bbox, {
         padding: 70,
     })
-}
-
-let RemoveStep = (totalLayer) => {
-    let classPopup = document.querySelectorAll('.point-label')
-    let L = lists.querySelectorAll("pre")
-
-    if (L.length <= 2) {
-        alert('Need at least 2 inputs')
-    } else {
-        classPopup.forEach(a => {
-            a.remove()
-        })
-        let index = $(this).parent('li').index()
-        let id = parseInt(index)
-
-        ol.removeChild(ol.childNodes[id]);
-
-        let removeMarker = document.querySelectorAll(`#marker${index}`)
-        console.log(removeMarker)
-        if (removeMarker.length === 1) {
-            removeMarker[0].remove()
-        } else {
-            removeMarker.forEach(marker => {
-                marker.remove()
-            })
-        }
-
-        let defLayer = map.getStyle().layers.slice(totalLayer.slice(-1)[0], this.length)
-
-        defLayer.forEach(element => {
-            map.removeLayer(element.id)
-        });
-
-        getRoutes()
-
-    }
 }
 
 // Show/hide the points
